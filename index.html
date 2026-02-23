@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>व्हाट्सएप नंबर फिल्टर (आपका टोकन सेट)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 24px;
+        }
+        h1 {
+            font-size: 24px;
+            color: #075e54;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 0;
+        }
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: monospace;
+            resize: vertical;
+            margin: 16px 0 8px;
+            box-sizing: border-box;
+        }
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+        .warning {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+        button {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        button:hover {
+            background: #128C7E;
+        }
+        button:disabled {
+            background: #b0b0b0;
+            cursor: not-allowed;
+        }
+        .status {
+            margin: 20px 0;
+            font-weight: 500;
+            background: #f3f3f3;
+            padding: 10px;
+            border-radius: 6px;
+            display: none;
+        }
+        .status.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .status.success {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        th {
+            background: #075e54;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        td, th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        tr.valid {
+            background: #e8f5e8;
+        }
+        tr.invalid {
+            background: #ffebee;
+        }
+        .footer {
+            margin-top: 24px;
+            font-size: 13px;
+            color: #777;
+            text-align: center;
+        }
+        .token-hidden {
+            background: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-family: monospace;
+            font-size: 14px;
+            color: #495057;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <span>📱 व्हाट्सएप नंबर फिल्टर</span>
+        </h1>
+        
+        <div class="token-hidden">
+            🔑 API टोकन: <strong>apify_api_FnX9sipoOu4xmR94k1LpaXIWaypCk80SK1wO</strong> (पहले से सेट)
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ बेहद जरूरी चेतावनी:</strong> इस पेज में आपका API टोकन पहले से ही लगा हुआ है। यह टोकन <strong>आपकी निजी चाबी</strong> है। इस फाइल को किसी के साथ शेयर न करें, न ही किसी सार्वजनिक वेबसाइट पर अपलोड करें। अगर यह टोकन किसी और के पास चला गया तो वह आपके Apify क्रेडिट का इस्तेमाल कर सकता है।
+        </div>
+
+        <div class="note">
+            <strong>ℹ️ जानकारी:</strong> आप जो भी नंबर चेक करेंगे, उनका रिजल्ट आपको नीचे टेबल में दिख जाएगा। हर नंबर को अंतरराष्ट्रीय फॉर्मेट में लिखें (जैसे +919876543210)।
+        </div>
+
+        <label for="numbers">📞 फोन नंबर (एक लाइन में एक):</label>
+        <textarea id="numbers" rows="6" placeholder="+919876543210&#10;+918888888888&#10;+919999999999">+919876543210
++918888888888
++919999999999</textarea>
+
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+            <button id="checkBtn" onclick="checkNumbers()">✅ व्हाट्सएप चेक करें</button>
+        </div>
+
+        <div id="status" class="status"></div>
+
+        <div id="resultArea" style="display: none;">
+            <h3>परिणाम:</h3>
+            <table id="resultTable">
+                <thead>
+                    <tr>
+                        <th>फोन नंबर</th>
+                        <th>स्थिति</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                </tbody>
+            </table>
+            <div style="margin-top: 12px; display: flex; gap: 12px; justify-content: flex-end;">
+                <button onclick="downloadCSV()">📥 CSV डाउनलोड</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>यह टूल Apify के <strong>WhatsApp Number Filter Pro</strong> ऐक्टर का उपयोग करता है।</p>
+            <p>आपका टोकन: <code>apify_api_FnX9sipoOu4xmR94k1LpaXIWaypCk80SK1wO</code> (गोपनीय रखें)</p>
+        </div>
+    </div>
+
+    <script>
+        // ⚡ आपका दिया हुआ API टोकन यहाँ लगा दिया गया है
+        const YOUR_TOKEN = "apify_api_FnX9sipoOu4xmR94k1LpaXIWaypCk80SK1wO";
+
+        // बटन और स्टेटस एलिमेंट
+        const checkBtn = document.getElementById('checkBtn');
+        const statusDiv = document.getElementById('status');
+        const resultArea = document.getElementById('resultArea');
+        const tableBody = document.getElementById('tableBody');
+
+        let currentResults = []; // डाउनलोड के लिए स्टोर करेंगे
+
+        function showStatus(msg, isError = false, isSuccess = false) {
+            statusDiv.style.display = 'block';
+            statusDiv.textContent = msg;
+            statusDiv.classList.remove('error', 'success');
+            if (isError) statusDiv.classList.add('error');
+            if (isSuccess) statusDiv.classList.add('success');
+        }
+
+        function hideStatus() {
+            statusDiv.style.display = 'none';
+        }
+
+        function setButtonsDisabled(disabled) {
+            checkBtn.disabled = disabled;
+        }
+
+        async function checkNumbers() {
+            // सीधे YOUR_TOKEN का इस्तेमाल करें
+            const token = YOUR_TOKEN;
+            const numbersText = document.getElementById('numbers').value.trim();
+
+            if (!numbersText) {
+                showStatus('❌ कृपया कम से कम एक फोन नंबर डालें।', true);
+                return;
+            }
+
+            // नंबरों को array में बदलें
+            let phoneNumbers = numbersText.split(/\n/).map(line => line.trim()).filter(line => line !== '');
+            if (phoneNumbers.length === 0) {
+                showStatus('❌ कोई वैध फोन नंबर नहीं मिला।', true);
+                return;
+            }
+
+            setButtonsDisabled(true);
+            showStatus('⏳ रन शुरू कर रहे हैं... कृपया प्रतीक्षा करें।');
+
+            try {
+                // 1. ऐक्टर रन शुरू करें
+                const actorId = "wilcode/whatsapp-number-filter-pro";
+                const runInput = {
+                    phoneNumberList: phoneNumbers,
+                    batchSize: 50,
+                    proxySettings: { useApifyProxy: true }
+                };
+
+                const runResponse = await fetch(`https://api.apify.com/v2/acts/${actorId}/runs`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(runInput)
+                });
+
+                if (!runResponse.ok) {
+                    const errData = await runResponse.text();
+                    throw new Error(`रन शुरू करने में त्रुटि: ${runResponse.status} ${errData}`);
+                }
+
+                const runData = await runResponse.json();
+                const runId = runData.data.id;
+                const datasetId = runData.data.defaultDatasetId;
+
+                showStatus('⏳ रन प्रोसेस हो रहा है... कृपया प्रतीक्षा करें।');
+
+                // 2. रन के पूरा होने का इंतज़ार करें
+                let runFinished = false;
+                let attempts = 0;
+                const maxAttempts = 60;
+                while (!runFinished && attempts < maxAttempts) {
+                    await sleep(2000);
+                    const statusResponse = await fetch(`https://api.apify.com/v2/acts/${actorId}/runs/${runId}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!statusResponse.ok) {
+                        const err = await statusResponse.text();
+                        throw new Error(`स्थिति चेक करने में त्रुटि: ${statusResponse.status} ${err}`);
+                    }
+                    const statusData = await statusResponse.json();
+                    const status = statusData.data.status;
+                    if (status === 'SUCCEEDED') {
+                        runFinished = true;
+                        break;
+                    } else if (status === 'FAILED' || status === 'ABORTED' || status === 'TIMED-OUT') {
+                        throw new Error(`रन ${status} के साथ समाप्त हुआ।`);
+                    }
+                    showStatus(`⏳ रन की स्थिति: ${status}... प्रतीक्षा करें (${attempts+1}/${maxAttempts})`);
+                    attempts++;
+                }
+
+                if (!runFinished) {
+                    throw new Error('रन पूरा होने में बहुत समय लग रहा है। बाद में पुनः प्रयास करें।');
+                }
+
+                // 3. डेटासेट से रिजल्ट लें
+                showStatus('⏳ रिजल्ट डाउनलोड हो रहे हैं...');
+                const datasetResponse = await fetch(`https://api.apify.com/v2/datasets/${datasetId}/items`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!datasetResponse.ok) {
+                    const err = await datasetResponse.text();
+                    throw new Error(`डेटासेट पढ़ने में त्रुटि: ${datasetResponse.status} ${err}`);
+                }
+                const results = await datasetResponse.json();
+
+                // 4. रिजल्ट को टेबल में दिखाएँ
+                displayResults(results);
+                currentResults = results;
+
+                showStatus(`✅ सफलतापूर्वक ${results.length} नंबरों की जाँच हुई।`, false, true);
+                resultArea.style.display = 'block';
+            } catch (error) {
+                console.error(error);
+                showStatus('❌ ' + error.message, true);
+                resultArea.style.display = 'none';
+            } finally {
+                setButtonsDisabled(false);
+            }
+        }
+
+        function displayResults(results) {
+            tableBody.innerHTML = '';
+            results.forEach(item => {
+                const row = document.createElement('tr');
+                row.className = item.status === 'valid' ? 'valid' : 'invalid';
+                const phoneCell = document.createElement('td');
+                phoneCell.textContent = item.phoneNumber;
+                const statusCell = document.createElement('td');
+                statusCell.textContent = item.status === 'valid' ? '✅ व्हाट्सएप पर' : '❌ नहीं मिला';
+                row.appendChild(phoneCell);
+                row.appendChild(statusCell);
+                tableBody.appendChild(row);
+            });
+        }
+
+        function downloadCSV() {
+            if (currentResults.length === 0) return;
+            let csv = "Phone Number,Status\n";
+            currentResults.forEach(item => {
+                csv += `"${item.phoneNumber}","${item.status === 'valid' ? 'WhatsApp' : 'Not on WhatsApp'}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'whatsapp_results.csv');
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // टोकन को console में न दिखने दें (सुरक्षा)
+        Object.defineProperty(window, 'YOUR_TOKEN', {
+            value: YOUR_TOKEN,
+            writable: false,
+            configurable: false,
+            enumerable: false
+        });
+    </script>
+</body>
+  </html>
