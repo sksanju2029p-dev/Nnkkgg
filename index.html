@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>व्हाट्सएप नंबर फिल्टर (आपका टोकन सेट)</title>
+    <title>व्हाट्सएप नंबर फिल्टर (Vercel + Apify)</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -40,17 +40,17 @@
             margin: 16px 0 8px;
             box-sizing: border-box;
         }
-        .note {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
+        .warning {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
             padding: 12px;
             border-radius: 6px;
             margin: 16px 0;
             font-size: 14px;
         }
-        .warning {
-            background: #f8d7da;
-            border-left: 4px solid #dc3545;
+        .note {
+            background: #e7f3ff;
+            border-left: 4px solid #25D366;
             padding: 12px;
             border-radius: 6px;
             margin: 16px 0;
@@ -135,24 +135,22 @@
 </head>
 <body>
     <div class="container">
-        <h1>
-            <span>📱 व्हाट्सएप नंबर फिल्टर</span>
-        </h1>
-        
+        <h1>📱 व्हाट्सएप नंबर फिल्टर (Vercel)</h1>
+
         <div class="token-hidden">
-            🔑 API टोकन: <strong>apify_api_FnX9sipoOu4xmR94k1LpaXIWaypCk80SK1wO</strong> (पहले से सेट)
+            🔑 API टोकन: <strong>apify_api_FnX9sipoOu4xmR94k1LpaXIWaypCk80SK1wO</strong> (सर्वर पर सुरक्षित)
         </div>
 
         <div class="warning">
-            <strong>⚠️ बेहद जरूरी चेतावनी:</strong> इस पेज में आपका API टोकन पहले से ही लगा हुआ है। यह टोकन <strong>आपकी निजी चाबी</strong> है। इस फाइल को किसी के साथ शेयर न करें, न ही किसी सार्वजनिक वेबसाइट पर अपलोड करें। अगर यह टोकन किसी और के पास चला गया तो वह आपके Apify क्रेडिट का इस्तेमाल कर सकता है।
+            <strong>⚠️ सुरक्षा:</strong> आपका टोकन अब क्लाइंट-साइड से नहीं भेजा जाएगा। यह सर्वर-साइड (Vercel function) से Apify को कॉल करेगा, जिससे आपका टोकन सुरक्षित रहेगा और CORS समस्या भी हल होगी।
         </div>
 
         <div class="note">
-            <strong>ℹ️ जानकारी:</strong> आप जो भी नंबर चेक करेंगे, उनका रिजल्ट आपको नीचे टेबल में दिख जाएगा। हर नंबर को अंतरराष्ट्रीय फॉर्मेट में लिखें (जैसे +919876543210)।
+            <strong>ℹ️ नंबर डालें:</strong> हर नंबर को अंतरराष्ट्रीय फॉर्मेट में लिखें (जैसे +919876543210)।
         </div>
 
         <label for="numbers">📞 फोन नंबर (एक लाइन में एक):</label>
-        <textarea id="numbers" rows="6" placeholder="+919876543210&#10;+918888888888&#10;+919999999999">+919876543210
+        <textarea id="numbers" rows="6" placeholder="+919876543210&#10;+918888888888">+919876543210
 +918888888888
 +919999999999</textarea>
 
@@ -180,22 +178,17 @@
         </div>
 
         <div class="footer">
-            <p>यह टूल Apify के <strong>WhatsApp Number Filter Pro</strong> ऐक्टर का उपयोग करता है।</p>
-            <p>आपका टोकन: <code>apify_api_FnX9sipoOu4xmR94k1LpaXIWaypCk80SK1wO</code> (गोपनीय रखें)</p>
+            <p>यह टूल Vercel + Apify के <strong>WhatsApp Number Filter Pro</strong> का उपयोग करता है।</p>
         </div>
     </div>
 
     <script>
-        // ⚡ आपका दिया हुआ API टोकन यहाँ लगा दिया गया है
-        const YOUR_TOKEN = "apify_api_FnX9sipoOu4xmR94k1LpaXIWaypCk80SK1wO";
-
-        // बटन और स्टेटस एलिमेंट
         const checkBtn = document.getElementById('checkBtn');
         const statusDiv = document.getElementById('status');
         const resultArea = document.getElementById('resultArea');
         const tableBody = document.getElementById('tableBody');
 
-        let currentResults = []; // डाउनलोड के लिए स्टोर करेंगे
+        let currentResults = [];
 
         function showStatus(msg, isError = false, isSuccess = false) {
             statusDiv.style.display = 'block';
@@ -214,8 +207,6 @@
         }
 
         async function checkNumbers() {
-            // सीधे YOUR_TOKEN का इस्तेमाल करें
-            const token = YOUR_TOKEN;
             const numbersText = document.getElementById('numbers').value.trim();
 
             if (!numbersText) {
@@ -223,7 +214,6 @@
                 return;
             }
 
-            // नंबरों को array में बदलें
             let phoneNumbers = numbersText.split(/\n/).map(line => line.trim()).filter(line => line !== '');
             if (phoneNumbers.length === 0) {
                 showStatus('❌ कोई वैध फोन नंबर नहीं मिला।', true);
@@ -231,81 +221,26 @@
             }
 
             setButtonsDisabled(true);
-            showStatus('⏳ रन शुरू कर रहे हैं... कृपया प्रतीक्षा करें।');
+            showStatus('⏳ कृपया प्रतीक्षा करें...');
 
             try {
-                // 1. ऐक्टर रन शुरू करें
-                const actorId = "wilcode/whatsapp-number-filter-pro";
-                const runInput = {
-                    phoneNumberList: phoneNumbers,
-                    batchSize: 50,
-                    proxySettings: { useApifyProxy: true }
-                };
-
-                const runResponse = await fetch(`https://api.apify.com/v2/acts/${actorId}/runs`, {
+                // अब यह अपने ही Vercel API endpoint को कॉल करेगा
+                const response = await fetch('/api/check', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify(runInput)
+                    body: JSON.stringify({ phoneNumbers })
                 });
 
-                if (!runResponse.ok) {
-                    const errData = await runResponse.text();
-                    throw new Error(`रन शुरू करने में त्रुटि: ${runResponse.status} ${errData}`);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'कुछ गड़बड़ हुई');
                 }
 
-                const runData = await runResponse.json();
-                const runId = runData.data.id;
-                const datasetId = runData.data.defaultDatasetId;
-
-                showStatus('⏳ रन प्रोसेस हो रहा है... कृपया प्रतीक्षा करें।');
-
-                // 2. रन के पूरा होने का इंतज़ार करें
-                let runFinished = false;
-                let attempts = 0;
-                const maxAttempts = 60;
-                while (!runFinished && attempts < maxAttempts) {
-                    await sleep(2000);
-                    const statusResponse = await fetch(`https://api.apify.com/v2/acts/${actorId}/runs/${runId}`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    if (!statusResponse.ok) {
-                        const err = await statusResponse.text();
-                        throw new Error(`स्थिति चेक करने में त्रुटि: ${statusResponse.status} ${err}`);
-                    }
-                    const statusData = await statusResponse.json();
-                    const status = statusData.data.status;
-                    if (status === 'SUCCEEDED') {
-                        runFinished = true;
-                        break;
-                    } else if (status === 'FAILED' || status === 'ABORTED' || status === 'TIMED-OUT') {
-                        throw new Error(`रन ${status} के साथ समाप्त हुआ।`);
-                    }
-                    showStatus(`⏳ रन की स्थिति: ${status}... प्रतीक्षा करें (${attempts+1}/${maxAttempts})`);
-                    attempts++;
-                }
-
-                if (!runFinished) {
-                    throw new Error('रन पूरा होने में बहुत समय लग रहा है। बाद में पुनः प्रयास करें।');
-                }
-
-                // 3. डेटासेट से रिजल्ट लें
-                showStatus('⏳ रिजल्ट डाउनलोड हो रहे हैं...');
-                const datasetResponse = await fetch(`https://api.apify.com/v2/datasets/${datasetId}/items`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (!datasetResponse.ok) {
-                    const err = await datasetResponse.text();
-                    throw new Error(`डेटासेट पढ़ने में त्रुटि: ${datasetResponse.status} ${err}`);
-                }
-                const results = await datasetResponse.json();
-
-                // 4. रिजल्ट को टेबल में दिखाएँ
+                const results = await response.json();
                 displayResults(results);
                 currentResults = results;
-
                 showStatus(`✅ सफलतापूर्वक ${results.length} नंबरों की जाँच हुई।`, false, true);
                 resultArea.style.display = 'block';
             } catch (error) {
@@ -348,18 +283,6 @@
             link.click();
             document.body.removeChild(link);
         }
-
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-
-        // टोकन को console में न दिखने दें (सुरक्षा)
-        Object.defineProperty(window, 'YOUR_TOKEN', {
-            value: YOUR_TOKEN,
-            writable: false,
-            configurable: false,
-            enumerable: false
-        });
     </script>
 </body>
-  </html>
+</html>
